@@ -10,8 +10,8 @@ try {
   console.warn("Could not set DNS servers:", e);
 }
 
-const client = new MongoClient(process.env.MONGODB_URI);
-const db = client.db("HireMedb");
+export const client = new MongoClient(process.env.MONGODB_URI);
+export const db = client.db("HireMedb");
 
 export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
@@ -22,6 +22,12 @@ export const auth = betterAuth({
     "http://localhost:3001",
     "http://127.0.0.1:3001",
   ],
+  account: {
+    accountLinking: {
+      enabled: true,
+      trustedProviders: ["google"],
+    },
+  },
   user: {
     additionalFields: {
       role: {
