@@ -5,7 +5,7 @@ import React, { useState } from "react";
 // Categorized filter chips spanning diverse industries
 const categoryChips = [
   { label: "⚡ Remote & Flexible", query: "Remote" },
-  { label: "💻 Tech & Engineering", query: "Engineering" },
+  { label: "💻 Tech & Software", query: "Software" },
   { label: "🏥 Healthcare & Medical", query: "Healthcare" },
   { label: "📈 Marketing & Sales", query: "Marketing" },
   { label: "💼 Finance & Accounting", query: "Finance" },
@@ -247,29 +247,58 @@ const Hero = () => {
       onMouseLeave={() => setIsHovered(false)}
       className="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-28 transition-colors"
     >
-      {/* 1. Luminous Atmospheric Background Gradients (Stunning in both Light & Dark modes) */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[600px] pointer-events-none -z-10 overflow-hidden">
-        {/* Top vibrant wash */}
-        <div className="absolute -top-36 left-1/2 -translate-x-1/2 w-[750px] h-[450px] bg-gradient-to-tr from-blue-400/25 via-indigo-300/25 to-violet-400/20 dark:from-blue-600/15 dark:via-indigo-600/15 dark:to-purple-700/10 rounded-full blur-[110px]" />
-        {/* Left sky accent */}
-        <div className="absolute top-20 left-12 w-[320px] h-[320px] bg-blue-300/20 dark:bg-blue-600/10 rounded-full blur-[90px]" />
-        {/* Right violet accent */}
-        <div className="absolute top-16 right-12 w-[340px] h-[340px] bg-violet-300/20 dark:bg-purple-600/10 rounded-full blur-[90px]" />
+      {/* ======================================================== */}
+      {/* 1. LIGHT MODE BACKGROUND DESIGN (Crisp, Architectural, Fresh) */}
+      {/* ======================================================== */}
+      <div className="dark:hidden absolute inset-0 -z-10 pointer-events-none overflow-hidden">
+        {/* Soft architectural grid with radial feathering */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_75%_65%_at_50%_0%,#000_65%,transparent_100%)] opacity-70" />
+
+        {/* Luminous, cheerful sky-blue & indigo sunrise wash */}
+        <div className="absolute -top-36 left-1/2 -translate-x-1/2 w-[950px] h-[520px] bg-gradient-to-tr from-blue-300/40 via-sky-200/50 to-indigo-200/40 rounded-full blur-[90px]" />
+        <div className="absolute top-24 left-10 w-[380px] h-[380px] bg-sky-200/45 rounded-full blur-[80px]" />
+        <div className="absolute top-24 right-10 w-[400px] h-[400px] bg-violet-200/40 rounded-full blur-[80px]" />
+
+        {/* Elegant geometric concentric ring accents for structure */}
+        <div className="absolute top-8 left-1/2 -translate-x-1/2 w-[850px] h-[850px] rounded-full border border-blue-400/20 pointer-events-none" />
+        <div className="absolute top-24 left-1/2 -translate-x-1/2 w-[650px] h-[650px] rounded-full border border-indigo-400/15 pointer-events-none" />
+        <div className="absolute top-40 left-1/2 -translate-x-1/2 w-[450px] h-[450px] rounded-full border border-sky-400/15 pointer-events-none" />
       </div>
 
-      {/* 2. Interactive Spotlight on Desktop Hover */}
+      {/* ======================================================== */}
+      {/* 2. DARK MODE BACKGROUND DESIGN (Deep Cyber Obsidian & Neon Aurora) */}
+      {/* ======================================================== */}
+      <div className="hidden dark:block absolute inset-0 -z-10 pointer-events-none overflow-hidden">
+        {/* Deep tech grid with subtle ambient brightness */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#27272a_1px,transparent_1px),linear-gradient(to_bottom,#27272a_1px,transparent_1px)] bg-[size:3.5rem_3.5rem] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_0%,#000_70%,transparent_100%)] opacity-40" />
+
+        {/* Deep electric nebula glow */}
+        <div className="absolute -top-44 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-gradient-to-r from-blue-600/30 via-indigo-600/35 to-violet-600/30 rounded-full blur-[130px]" />
+        <div className="absolute top-12 left-1/4 w-[420px] h-[380px] bg-cyan-500/15 rounded-full blur-[100px]" />
+        <div className="absolute top-12 right-1/4 w-[420px] h-[380px] bg-fuchsia-600/15 rounded-full blur-[100px]" />
+
+        {/* Cyber glowing orbital rings */}
+        <div className="absolute top-8 left-1/2 -translate-x-1/2 w-[850px] h-[850px] rounded-full border border-blue-500/20 pointer-events-none" />
+        <div className="absolute top-28 left-1/2 -translate-x-1/2 w-[650px] h-[650px] rounded-full border border-indigo-500/25 pointer-events-none" />
+        <div className="absolute top-48 left-1/2 -translate-x-1/2 w-[450px] h-[450px] rounded-full border border-violet-500/20 pointer-events-none" />
+
+        {/* Top laser beam highlight */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 max-w-4xl h-[1px] bg-gradient-to-r from-transparent via-blue-500/60 to-transparent" />
+      </div>
+
+      {/* 3. Interactive Mouse Spotlight (Elevates desktop engagement) */}
       {isHovered && (
         <div
           className="pointer-events-none absolute inset-0 -z-10 transition-opacity duration-300 hidden sm:block"
           style={{
-            background: `radial-gradient(650px circle at ${mousePos.x}px ${mousePos.y}px, rgba(59, 130, 246, 0.07), transparent 45%)`,
+            background: `radial-gradient(650px circle at ${mousePos.x}px ${mousePos.y}px, rgba(59, 130, 246, 0.08), transparent 45%)`,
           }}
         />
       )}
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         {/* Announcement Pill Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold mb-8 border border-blue-200/90 dark:border-zinc-800 bg-white/90 dark:bg-zinc-900/80 shadow-[0_2px_10px_rgba(37,99,235,0.06)] dark:shadow-none text-zinc-800 dark:text-zinc-200 backdrop-blur-md hover:border-blue-500/50 hover:shadow-md transition-all duration-300 cursor-default">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold mb-8 border border-blue-300/80 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/80 shadow-[0_2px_12px_rgba(37,99,235,0.08)] dark:shadow-none text-zinc-800 dark:text-zinc-200 backdrop-blur-md hover:border-blue-500/60 hover:shadow-md transition-all duration-300 cursor-default">
           <span className="flex h-2 w-2 relative">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
@@ -297,9 +326,9 @@ const Hero = () => {
           roles in technology, healthcare, business, creative, and finance with upfront compensation.
         </p>
 
-        {/* Crisp, High-Contrast Search Capsule (Designed for light & dark perfection) */}
+        {/* Crisp, High-Contrast Search Capsule */}
         <div className="mt-10 max-w-3xl mx-auto">
-          <div className="group relative p-2 sm:p-2.5 rounded-2xl sm:rounded-3xl bg-white dark:bg-zinc-900/95 border border-zinc-200/90 dark:border-zinc-800 shadow-[0_12px_40px_-8px_rgba(0,0,0,0.08)] dark:shadow-2xl dark:shadow-black/70 backdrop-blur-xl transition-all duration-300 focus-within:border-blue-600 dark:focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10 dark:focus-within:ring-blue-500/20">
+          <div className="group relative p-2 sm:p-2.5 rounded-2xl sm:rounded-3xl bg-white dark:bg-zinc-900/95 border border-zinc-200/90 dark:border-zinc-800 shadow-[0_12px_45px_-8px_rgba(0,0,0,0.08)] dark:shadow-2xl dark:shadow-black/70 backdrop-blur-xl transition-all duration-300 focus-within:border-blue-600 dark:focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10 dark:focus-within:ring-blue-500/20">
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
               
               {/* Role / Industry / Keyword Input */}
@@ -431,7 +460,7 @@ const Hero = () => {
             >
               <div>
                 <div className="flex items-center justify-between mb-5">
-                  <div className="w-12 h-12 rounded-2xl bg-blue-50/80 dark:bg-zinc-800/80 border border-blue-100 dark:border-zinc-700/60 flex items-center justify-center group-hover:scale-110 group-hover:bg-blue-100/70 dark:group-hover:bg-blue-950/40 transition-all duration-300">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-50/90 dark:bg-zinc-800/80 border border-blue-100 dark:border-zinc-700/60 flex items-center justify-center group-hover:scale-110 group-hover:bg-blue-100/80 dark:group-hover:bg-blue-950/40 transition-all duration-300">
                     {card.icon}
                   </div>
                   <span className="text-[11px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 group-hover:bg-blue-500/10 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
