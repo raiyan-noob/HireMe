@@ -257,18 +257,21 @@ const Hero = () => {
       className="relative overflow-hidden pt-10 pb-20 lg:pt-16 lg:pb-28 transition-colors"
     >
       {/* ======================================================== */}
-      {/* 1. LIGHT MODE BACKGROUND: Pristine, Elegant, Warm Canvas */}
+      {/* 1. LIGHT MODE BACKGROUND DESIGN (Modern Grid, Light Beam & Aurora) */}
       {/* ======================================================== */}
-      <div className="dark:hidden absolute inset-0 -z-10 pointer-events-none overflow-hidden bg-gradient-to-b from-slate-50 via-white to-white">
-        {/* Soft, ultra-faint architectural dot-grid with smooth radial mask */}
-        <div className="absolute inset-0 bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_70%_50%_at_50%_15%,#000_70%,transparent_100%)] opacity-40" />
+      <div className="dark:hidden absolute inset-0 -z-10 pointer-events-none overflow-hidden bg-gradient-to-b from-slate-50/80 via-white to-white">
+        {/* Modern geometric architectural grid with smooth radial falloff */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:3.5rem_3.5rem] [mask-image:radial-gradient(ellipse_75%_55%_at_50%_15%,#000_70%,transparent_100%)] opacity-60" />
 
-        {/* Luminous, warm sky and indigo aura at top center */}
-        <div className="absolute -top-36 left-1/2 -translate-x-1/2 w-[850px] h-[450px] bg-gradient-to-b from-blue-200/40 via-indigo-100/35 to-transparent rounded-full blur-3xl opacity-80" />
-        
-        {/* Soft atmospheric glow on flanks */}
-        <div className="absolute top-16 left-12 w-72 h-72 bg-sky-200/30 rounded-full blur-3xl" />
-        <div className="absolute top-16 right-12 w-72 h-72 bg-indigo-200/25 rounded-full blur-3xl" />
+        {/* Luminous multi-tonal sunrise gradient glow at top */}
+        <div className="absolute -top-36 left-1/2 -translate-x-1/2 w-[900px] h-[480px] bg-gradient-to-tr from-blue-300/35 via-sky-200/40 to-indigo-200/35 rounded-full blur-[100px]" />
+
+        {/* Atmospheric soft color blooms */}
+        <div className="absolute top-20 left-10 w-80 h-80 bg-sky-200/30 rounded-full blur-[90px]" />
+        <div className="absolute top-20 right-10 w-80 h-80 bg-violet-200/25 rounded-full blur-[90px]" />
+
+        {/* Elegant top horizon light accent line */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 max-w-4xl h-[2px] bg-gradient-to-r from-transparent via-blue-500/35 to-transparent" />
       </div>
 
       {/* ======================================================== */}
@@ -292,12 +295,12 @@ const Hero = () => {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 max-w-4xl h-[1px] bg-gradient-to-r from-transparent via-blue-500/60 to-transparent" />
       </div>
 
-      {/* 3. Interactive Mouse Spotlight (Elevates desktop engagement in dark mode) */}
+      {/* 3. Interactive Mouse Spotlight Hover UI (Active in both Light & Dark modes) */}
       {isHovered && (
         <div
-          className="pointer-events-none absolute inset-0 -z-10 transition-opacity duration-300 hidden sm:block dark:opacity-100 opacity-0"
+          className="pointer-events-none absolute inset-0 -z-10 transition-opacity duration-300 hidden sm:block opacity-100"
           style={{
-            background: `radial-gradient(650px circle at ${mousePos.x}px ${mousePos.y}px, rgba(59, 130, 246, 0.08), transparent 45%)`,
+            background: `radial-gradient(600px circle at ${mousePos.x}px ${mousePos.y}px, rgba(37, 99, 235, 0.08), transparent 45%)`,
           }}
         />
       )}
