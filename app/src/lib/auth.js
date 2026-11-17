@@ -1,6 +1,14 @@
+import dns from "node:dns";
 import { betterAuth } from "better-auth";
 import { MongoClient } from "mongodb";
 import { mongodbAdapter } from "@better-auth/mongo-adapter";
+
+// Fix querySrv ECONNREFUSED on local ISP DNS
+try {
+  dns.setServers(["1.1.1.1", "8.8.8.8"]);
+} catch (e) {
+  console.warn("Could not set DNS servers:", e);
+}
 
 const client = new MongoClient(process.env.MONGODB_URI);
 const db = client.db("HireMedb");
