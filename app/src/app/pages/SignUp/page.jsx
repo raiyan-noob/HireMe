@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { authClient } from "../../../../lib/auth-client";
 
 const SignUpPage = () => {
   const [role, setRole] = useState("seeker"); // "seeker" | "employer"
@@ -39,9 +40,18 @@ const SignUpPage = () => {
 
   const strength = getPasswordStrength();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // User will integrate authentication manually
+    const { data, error } = await authClient.signUp.email({
+      name: fullName,
+      email: email,
+      password: password,
+      callbackURL: "/",
+    });
+
+    if (error) {
+      console.error(error.message);
+    }
   };
 
   return (
