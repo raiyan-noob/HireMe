@@ -8,10 +8,20 @@ const SignUpPage = () => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [companyName, setCompanyName] = useState("");
-  const [specialty, setSpecialty] = useState("tech");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Smooth mouse-following spotlight tracking
+  const handleMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    setMousePos({
+      x: e.clientX - rect.left,
+      y: e.clientY - rect.top,
+    });
+  };
 
   // Dynamic Password Strength Meter
   const getPasswordStrength = () => {
@@ -35,8 +45,12 @@ const SignUpPage = () => {
   };
 
   return (
-    <div className="relative min-h-[calc(100vh-80px)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 overflow-hidden transition-colors">
-      
+    <div
+      onMouseMove={handleMouseMove}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="relative min-h-[calc(100vh-80px)] flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 overflow-hidden transition-colors"
+    >
       {/* ======================================================== */}
       {/* 1. LIGHT MODE BACKGROUND (Pristine, Radiant Canvas) */}
       {/* ======================================================== */}
@@ -73,6 +87,16 @@ const SignUpPage = () => {
         {/* Top laser beam line */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 max-w-4xl h-[1px] bg-gradient-to-r from-transparent via-blue-500/60 to-transparent" />
       </div>
+
+      {/* 3. Interactive Mouse Spotlight Hover Effect */}
+      {isHovered && (
+        <div
+          className="pointer-events-none absolute inset-0 -z-10 transition-opacity duration-300 hidden sm:block opacity-100"
+          style={{
+            background: `radial-gradient(600px circle at ${mousePos.x}px ${mousePos.y}px, rgba(37, 99, 235, 0.08), transparent 45%)`,
+          }}
+        />
+      )}
 
       <div className="w-full max-w-lg mx-auto">
         
@@ -186,13 +210,13 @@ const SignUpPage = () => {
             </button>
           </div>
 
-          {/* Social OAuth Buttons */}
-          <div className="grid grid-cols-2 gap-3 mb-6">
+          {/* Google Sign Up Button */}
+          <div className="mb-6">
             <button
               type="button"
-              className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-slate-200 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 text-xs sm:text-sm font-semibold hover:bg-slate-50 dark:hover:bg-zinc-700/60 shadow-xs hover:border-slate-300 dark:hover:border-zinc-600 transition-all cursor-pointer"
+              className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl border border-slate-200 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-zinc-700/60 shadow-xs hover:border-slate-300 dark:hover:border-zinc-600 transition-all cursor-pointer"
             >
-              <svg className="w-4 h-4" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" viewBox="0 0 24 24">
                 <path
                   fill="#4285F4"
                   d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -210,21 +234,7 @@ const SignUpPage = () => {
                   d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
                 />
               </svg>
-              <span>Google</span>
-            </button>
-
-            <button
-              type="button"
-              className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl border border-slate-200 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 text-xs sm:text-sm font-semibold hover:bg-slate-50 dark:hover:bg-zinc-700/60 shadow-xs hover:border-slate-300 dark:hover:border-zinc-600 transition-all cursor-pointer"
-            >
-              <svg className="w-4 h-4 fill-currentColor" viewBox="0 0 24 24">
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
-                />
-              </svg>
-              <span>GitHub</span>
+              <span>Continue with Google</span>
             </button>
           </div>
 
@@ -293,8 +303,8 @@ const SignUpPage = () => {
               </div>
             </div>
 
-            {/* Dynamic Role-specific field */}
-            {role === "employer" ? (
+            {/* Role-specific field (Company name for employers only) */}
+            {role === "employer" && (
               <div>
                 <label
                   htmlFor="companyName"
@@ -318,30 +328,6 @@ const SignUpPage = () => {
                     required
                     className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700/80 text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 outline-none focus:bg-white dark:focus:bg-zinc-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
                   />
-                </div>
-              </div>
-            ) : (
-              <div>
-                <label
-                  htmlFor="specialty"
-                  className="block text-xs font-bold text-slate-700 dark:text-zinc-300 uppercase tracking-wider mb-1.5 text-left"
-                >
-                  Primary Industry / Field
-                </label>
-                <div className="relative flex items-center">
-                  <select
-                    id="specialty"
-                    value={specialty}
-                    onChange={(e) => setSpecialty(e.target.value)}
-                    className="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700/80 text-sm font-medium text-slate-900 dark:text-white outline-none focus:bg-white dark:focus:bg-zinc-800 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all cursor-pointer"
-                  >
-                    <option value="tech" className="bg-white dark:bg-zinc-900">Tech & Software Development</option>
-                    <option value="healthcare" className="bg-white dark:bg-zinc-900">Healthcare & Medicine</option>
-                    <option value="finance" className="bg-white dark:bg-zinc-900">Finance & Accounting</option>
-                    <option value="marketing" className="bg-white dark:bg-zinc-900">Marketing & Sales</option>
-                    <option value="design" className="bg-white dark:bg-zinc-900">Creative & UI/UX Design</option>
-                    <option value="operations" className="bg-white dark:bg-zinc-900">Operations & Management</option>
-                  </select>
                 </div>
               </div>
             )}
@@ -462,19 +448,6 @@ const SignUpPage = () => {
             </p>
           </div>
 
-        </div>
-
-        {/* Security & Trust Footer */}
-        <div className="mt-8 flex items-center justify-center gap-4 text-xs text-slate-400 dark:text-zinc-500">
-          <span className="flex items-center gap-1">
-            <svg className="w-3.5 h-3.5 text-emerald-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-              <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
-              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-            </svg>
-            100% Free & Verified
-          </span>
-          <span>•</span>
-          <span>Encrypted Data Privacy</span>
         </div>
 
       </div>
