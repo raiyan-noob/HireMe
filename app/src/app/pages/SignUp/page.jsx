@@ -2,9 +2,11 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { authClient } from "../../../../lib/auth-client";
+import { useRouter } from "next/navigation";
+import { authClient } from "@/lib/auth-client";
 
 const SignUpPage = () => {
+  const router = useRouter();
   const [role, setRole] = useState("seeker"); // "seeker" | "employer"
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
@@ -12,6 +14,8 @@ const SignUpPage = () => {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
 
@@ -42,15 +46,46 @@ const SignUpPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { data, error } = await authClient.signUp.email({
-      name: fullName,
-      email: email,
-      password: password,
-      callbackURL: "/",
-    });
+    setErrorMessage("");
+    setLoading(true);
 
-    if (error) {
-      console.error(error.message);
+    try {
+      const res = await authClient.signUp.email({
+        name: fullName,
+        email: email,
+        password: password,
+        callbackURL: "/",
+      });
+
+      if (res?.error) {
+        console.error("Sign up error:", res.error);
+        setErrorMessage(
+          res.error.message || "Failed to create account. Please check your credentials."
+        );
+      } else {
+        console.log("Sign up successful:", res?.data);
+        router.push("/");
+      }
+    } catch (err) {
+      console.error("Unexpected sign up error:", err);
+      setErrorMessage(
+        err.message || "An unexpected error occurred during sign up."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setErrorMessage("");
+    try {
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/",
+      });
+    } catch (err) {
+      console.error("Google sign in error:", err);
+      setErrorMessage(err.message || "Failed to connect to Google.");
     }
   };
 
@@ -147,6 +182,18 @@ const SignUpPage = () => {
             </p>
           </div>
 
+          {/* Error Message Alert */}
+          {errorMessage && (
+            <div className="mb-6 p-3.5 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800/80 text-rose-700 dark:text-rose-300 text-sm font-medium flex items-center gap-2.5 shadow-xs">
+              <svg className="w-5 h-5 shrink-0 text-rose-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10" />
+                <line x1="12" y1="8" x2="12" y2="12" />
+                <line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              <span>{errorMessage}</span>
+            </div>
+          )}
+
           {/* Account Role Selector (Job Seeker vs Employer) */}
           <div className="grid grid-cols-2 gap-3 mb-6">
             {/* Candidate Role Card */}
@@ -224,6 +271,7 @@ const SignUpPage = () => {
           <div className="mb-6">
             <button
               type="button"
+              onClick={handleGoogleSignIn}
               className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl border border-slate-200 dark:border-zinc-700/80 bg-white dark:bg-zinc-800 text-slate-700 dark:text-zinc-200 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-zinc-700/60 shadow-xs hover:border-slate-300 dark:hover:border-zinc-600 transition-all cursor-pointer"
             >
               <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -431,15 +479,28 @@ const SignUpPage = () => {
             <div className="pt-2">
               <button
                 type="submit"
-                className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:via-indigo-500 hover:to-violet-500 text-white font-bold text-sm shadow-md shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                disabled={loading}
+                className="w-full py-3.5 px-4 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:via-indigo-500 hover:to-violet-500 disabled:opacity-60 disabled:cursor-not-allowed text-white font-bold text-sm shadow-md shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-2 cursor-pointer"
               >
-                <span>
-                  {role === "employer" ? "Create Employer Account" : "Create Candidate Account"}
-                </span>
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <path d="M5 12h14" />
-                  <path d="m12 5 7 7-7 7" />
-                </svg>
+                {loading ? (
+                  <>
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    <span>Creating account...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>
+                      {role === "employer" ? "Create Employer Account" : "Create Candidate Account"}
+                    </span>
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <path d="M5 12h14" />
+                      <path d="m12 5 7 7-7 7" />
+                    </svg>
+                  </>
+                )}
               </button>
             </div>
 
