@@ -1,16 +1,15 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 
-// Categories spanning all major job markets with icons & counts
+// Categorized filter chips spanning diverse industries
 const categories = [
   {
     name: "Tech & Software",
     count: "14.2k jobs",
     query: "Software",
-    color: "from-blue-500 to-indigo-600",
-    bgLight: "bg-blue-50 text-blue-700 border-blue-200",
+    iconColor: "text-blue-600 dark:text-blue-400",
+    iconBgLight: "bg-blue-50 dark:bg-blue-950/40",
     icon: (
       <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <polyline points="16 18 22 12 16 6" />
@@ -22,8 +21,8 @@ const categories = [
     name: "Healthcare & Medicine",
     count: "9.5k jobs",
     query: "Healthcare",
-    color: "from-rose-500 to-red-600",
-    bgLight: "bg-rose-50 text-rose-700 border-rose-200",
+    iconColor: "text-rose-600 dark:text-rose-400",
+    iconBgLight: "bg-rose-50 dark:bg-rose-950/40",
     icon: (
       <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
@@ -34,8 +33,8 @@ const categories = [
     name: "Finance & Banking",
     count: "8.1k jobs",
     query: "Finance",
-    color: "from-emerald-500 to-teal-600",
-    bgLight: "bg-emerald-50 text-emerald-700 border-emerald-200",
+    iconColor: "text-emerald-600 dark:text-emerald-400",
+    iconBgLight: "bg-emerald-50 dark:bg-emerald-950/40",
     icon: (
       <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <rect x="2" y="7" width="20" height="14" rx="2" />
@@ -47,8 +46,8 @@ const categories = [
     name: "Marketing & Growth",
     count: "7.4k jobs",
     query: "Marketing",
-    color: "from-amber-500 to-orange-600",
-    bgLight: "bg-amber-50 text-amber-700 border-amber-200",
+    iconColor: "text-amber-600 dark:text-amber-400",
+    iconBgLight: "bg-amber-50 dark:bg-amber-950/40",
     icon: (
       <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
@@ -60,8 +59,8 @@ const categories = [
     name: "Creative & Design",
     count: "6.2k jobs",
     query: "Design",
-    color: "from-purple-500 to-violet-600",
-    bgLight: "bg-purple-50 text-purple-700 border-purple-200",
+    iconColor: "text-purple-600 dark:text-purple-400",
+    iconBgLight: "bg-purple-50 dark:bg-purple-950/40",
     icon: (
       <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <circle cx="13.5" cy="6.5" r=".5" fill="currentColor" />
@@ -76,8 +75,8 @@ const categories = [
     name: "Management & HR",
     count: "5.8k jobs",
     query: "Operations",
-    color: "from-sky-500 to-blue-600",
-    bgLight: "bg-sky-50 text-sky-700 border-sky-200",
+    iconColor: "text-sky-600 dark:text-sky-400",
+    iconBgLight: "bg-sky-50 dark:bg-sky-950/40",
     icon: (
       <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
         <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
@@ -243,20 +242,25 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative overflow-hidden pt-8 pb-16 lg:pt-14 lg:pb-24">
+    <section className="relative overflow-hidden pt-10 pb-20 lg:pt-16 lg:pb-28 transition-colors">
+      
       {/* ======================================================== */}
-      {/* 1. LIGHT MODE BACKGROUND: Luminous, Clean & Warm */}
+      {/* 1. LIGHT MODE BACKGROUND: Pristine Linear/Stripe Canvas */}
       {/* ======================================================== */}
-      <div className="dark:hidden absolute inset-0 -z-10 pointer-events-none overflow-hidden">
-        {/* Soft, clean gradient mesh with zero dirty artifacts */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[650px] bg-gradient-to-b from-blue-50/70 via-indigo-50/30 to-transparent" />
-        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[900px] h-[450px] bg-gradient-to-r from-blue-400/15 via-indigo-300/20 to-purple-400/15 rounded-full blur-[100px]" />
-        <div className="absolute top-20 left-10 w-80 h-80 bg-sky-300/20 rounded-full blur-[90px]" />
-        <div className="absolute top-20 right-10 w-80 h-80 bg-violet-300/15 rounded-full blur-[90px]" />
+      <div className="dark:hidden absolute inset-0 -z-10 pointer-events-none overflow-hidden bg-gradient-to-b from-slate-50 via-white to-white">
+        {/* Crisp soft architectural grid with gentle radial falloff */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#cbd5e1_1px,transparent_1px),linear-gradient(to_bottom,#cbd5e1_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_70%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-35" />
+
+        {/* Luminous, warm sky and indigo aura at top center */}
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[850px] h-[500px] bg-gradient-to-b from-blue-200/50 via-indigo-100/40 to-transparent rounded-full blur-3xl opacity-80" />
+        
+        {/* Soft floating color spotlights on flanks */}
+        <div className="absolute top-16 left-12 w-72 h-72 bg-sky-200/35 rounded-full blur-3xl" />
+        <div className="absolute top-16 right-12 w-72 h-72 bg-indigo-200/30 rounded-full blur-3xl" />
       </div>
 
       {/* ======================================================== */}
-      {/* 2. DARK MODE BACKGROUND: Deep Obsidian, Glow & Laser Horizon */}
+      {/* 2. DARK MODE BACKGROUND: Kept intact as requested */}
       {/* ======================================================== */}
       <div className="hidden dark:block absolute inset-0 -z-10 pointer-events-none overflow-hidden">
         <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[950px] h-[500px] bg-gradient-to-r from-blue-600/25 via-indigo-600/30 to-violet-600/25 rounded-full blur-[130px]" />
@@ -269,13 +273,14 @@ const Hero = () => {
         
         {/* Top Header & Search Area */}
         <div className="text-center max-w-4xl mx-auto">
-          {/* Chic Pill Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold mb-6 border border-blue-200/90 dark:border-zinc-800 bg-white/95 dark:bg-zinc-900/80 shadow-[0_2px_12px_rgba(37,99,235,0.06)] dark:shadow-none text-zinc-800 dark:text-zinc-200 backdrop-blur-md hover:border-blue-500/50 hover:shadow-md transition-all duration-300 cursor-default">
+          
+          {/* Refined Pill Badge */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold mb-6 border border-slate-200 bg-white/95 dark:bg-zinc-900/80 dark:border-zinc-800 shadow-[0_2px_10px_rgba(15,23,42,0.04)] text-slate-800 dark:text-zinc-200 backdrop-blur-md hover:border-blue-500 hover:shadow-md transition-all duration-300 cursor-default">
             <span className="flex h-2 w-2 relative">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-500 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
             </span>
-            <span className="text-zinc-500 dark:text-zinc-400 font-normal">
+            <span className="text-slate-500 dark:text-zinc-400 font-normal">
               Empowering Careers:
             </span>
             <span className="font-bold text-blue-600 dark:text-blue-400">
@@ -297,22 +302,18 @@ const Hero = () => {
             The modern job ecosystem for all professions. Connect directly with hiring managers across technology, healthcare, business, creative, and finance.
           </p>
 
-          {/* Executive Multi-Segment Search Box */}
+          {/* Precision Executive Search Bar */}
           <div className="mt-9">
-            <div className="p-2 sm:p-2.5 rounded-2xl sm:rounded-3xl bg-white dark:bg-zinc-900/95 border border-slate-200 dark:border-zinc-800 shadow-[0_15px_45px_-10px_rgba(0,0,0,0.09)] dark:shadow-2xl dark:shadow-black/70 flex flex-col md:flex-row items-stretch md:items-center gap-2 transition-all focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10">
+            <div className="p-2 sm:p-2.5 rounded-2xl sm:rounded-3xl bg-white dark:bg-zinc-900/95 border border-slate-200/90 dark:border-zinc-800 shadow-[0_16px_40px_-12px_rgba(15,23,42,0.08),0_2px_8px_-2px_rgba(15,23,42,0.04)] dark:shadow-2xl dark:shadow-black/70 flex flex-col md:flex-row items-stretch md:items-center gap-2 transition-all focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10">
               
               {/* Segment 1: Role / Title / Keyword */}
-              <div className="flex-1 flex items-center px-3.5 py-2.5">
-                <svg
-                  className="w-5 h-5 text-blue-600 dark:text-blue-400 mr-3 shrink-0"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                >
-                  <circle cx="11" cy="11" r="8" />
-                  <path d="m21 21-4.3-4.3" />
-                </svg>
+              <div className="flex-1 flex items-center px-4 py-2.5">
+                <div className="w-8 h-8 rounded-xl bg-blue-50 dark:bg-zinc-800 flex items-center justify-center text-blue-600 dark:text-blue-400 mr-3 shrink-0">
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                    <circle cx="11" cy="11" r="8" />
+                    <path d="m21 21-4.3-4.3" />
+                  </svg>
+                </div>
                 <div className="text-left w-full">
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500">
                     What
@@ -331,17 +332,13 @@ const Hero = () => {
               <div className="hidden md:block w-[1px] h-9 bg-slate-200 dark:bg-zinc-800" />
 
               {/* Segment 2: Location */}
-              <div className="flex-1 flex items-center px-3.5 py-2.5 border-t md:border-t-0 border-slate-100 dark:border-zinc-800/80">
-                <svg
-                  className="w-5 h-5 text-indigo-500 dark:text-indigo-400 mr-3 shrink-0"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                >
-                  <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
-                  <circle cx="12" cy="10" r="3" />
-                </svg>
+              <div className="flex-1 flex items-center px-4 py-2.5 border-t md:border-t-0 border-slate-100 dark:border-zinc-800/80">
+                <div className="w-8 h-8 rounded-xl bg-indigo-50 dark:bg-zinc-800 flex items-center justify-center text-indigo-600 dark:text-indigo-400 mr-3 shrink-0">
+                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                    <circle cx="12" cy="10" r="3" />
+                  </svg>
+                </div>
                 <div className="text-left w-full">
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500">
                     Where
@@ -360,7 +357,7 @@ const Hero = () => {
               <div className="hidden md:block w-[1px] h-9 bg-slate-200 dark:bg-zinc-800" />
 
               {/* Segment 3: Industry Category Select */}
-              <div className="flex items-center px-3.5 py-2.5 border-t md:border-t-0 border-slate-100 dark:border-zinc-800/80 md:w-48">
+              <div className="flex items-center px-4 py-2.5 border-t md:border-t-0 border-slate-100 dark:border-zinc-800/80 md:w-48">
                 <div className="text-left w-full">
                   <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-zinc-500">
                     Industry
@@ -399,13 +396,7 @@ const Hero = () => {
                 className="w-full md:w-auto px-8 py-4 rounded-xl sm:rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:via-indigo-500 hover:to-violet-500 text-white font-bold text-sm sm:text-base shadow-md shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer"
               >
                 <span>Find Jobs</span>
-                <svg
-                  className="w-4 h-4"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.5"
-                >
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M5 12h14" />
                   <path d="m12 5 7 7-7 7" />
                 </svg>
@@ -413,7 +404,7 @@ const Hero = () => {
             </div>
           </div>
 
-          {/* Category Chips Carousel */}
+          {/* Category Chips with Colorful Bubble Icons */}
           <div className="mt-5 flex flex-wrap items-center justify-center gap-2">
             <span className="text-xs font-bold text-slate-400 dark:text-zinc-500 uppercase tracking-wider mr-1">
               Popular:
@@ -428,15 +419,15 @@ const Hero = () => {
                   className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 cursor-pointer border ${
                     isActive
                       ? "bg-blue-600 text-white border-blue-600 shadow-md shadow-blue-500/30 scale-102"
-                      : "bg-white dark:bg-zinc-900/90 text-slate-700 dark:text-zinc-300 border-slate-200/90 dark:border-zinc-800 hover:border-blue-300 dark:hover:border-zinc-700 hover:bg-slate-50 dark:hover:bg-zinc-800 shadow-xs hover:-translate-y-0.5"
+                      : "bg-white dark:bg-zinc-900/90 text-slate-700 dark:text-zinc-300 border-slate-200/90 dark:border-zinc-800 hover:border-blue-400 dark:hover:border-zinc-700 hover:bg-slate-50 dark:hover:bg-zinc-800 shadow-xs hover:-translate-y-0.5"
                   }`}
                 >
                   <span
-                    className={
+                    className={`w-5 h-5 rounded-full flex items-center justify-center ${
                       isActive
-                        ? "text-white"
-                        : "text-blue-600 dark:text-blue-400"
-                    }
+                        ? "bg-white/20 text-white"
+                        : `${cat.iconBgLight} ${cat.iconColor}`
+                    }`}
                   >
                     {cat.icon}
                   </span>
@@ -456,11 +447,11 @@ const Hero = () => {
           </div>
         </div>
 
-        {/* Visual Showcase: 3 High-Fidelity Feature Cards */}
+        {/* Visual Showcase: 3 High-Fidelity Feature Cards with Top Gradient Highlight */}
         <div className="mt-16 lg:mt-20 grid grid-cols-1 md:grid-cols-3 gap-6">
           
           {/* Card 1: Featured Live Job Preview */}
-          <div className="p-6 rounded-3xl bg-white dark:bg-zinc-900/80 border border-slate-200/90 dark:border-zinc-800 shadow-[0_10px_35px_-8px_rgba(0,0,0,0.06)] dark:shadow-none hover:shadow-[0_20px_45px_-12px_rgba(37,99,235,0.12)] dark:hover:shadow-[0_20px_45px_-12px_rgba(0,0,0,0.7)] transition-all hover:-translate-y-1.5 flex flex-col justify-between text-left">
+          <div className="relative overflow-hidden p-6 rounded-3xl bg-white dark:bg-zinc-900/80 border border-slate-200/90 dark:border-zinc-800 shadow-[0_12px_35px_-8px_rgba(15,23,42,0.07)] dark:shadow-none hover:shadow-[0_22px_50px_-12px_rgba(37,99,235,0.15)] dark:hover:shadow-[0_20px_45px_-12px_rgba(0,0,0,0.7)] transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between text-left before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-gradient-to-r before:from-blue-500 before:to-indigo-500">
             <div>
               {/* Header */}
               <div className="flex items-center justify-between mb-4">
@@ -533,7 +524,7 @@ const Hero = () => {
           </div>
 
           {/* Card 2: AI Compatibility & Real Matches */}
-          <div className="p-6 rounded-3xl bg-white dark:bg-zinc-900/80 border border-slate-200/90 dark:border-zinc-800 shadow-[0_10px_35px_-8px_rgba(0,0,0,0.06)] dark:shadow-none hover:shadow-[0_20px_45px_-12px_rgba(37,99,235,0.12)] dark:hover:shadow-[0_20px_45px_-12px_rgba(0,0,0,0.7)] transition-all hover:-translate-y-1.5 flex flex-col justify-between text-left">
+          <div className="relative overflow-hidden p-6 rounded-3xl bg-white dark:bg-zinc-900/80 border border-slate-200/90 dark:border-zinc-800 shadow-[0_12px_35px_-8px_rgba(15,23,42,0.07)] dark:shadow-none hover:shadow-[0_22px_50px_-12px_rgba(37,99,235,0.15)] dark:hover:shadow-[0_20px_45px_-12px_rgba(0,0,0,0.7)] transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between text-left before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-gradient-to-r before:from-indigo-500 before:to-violet-500">
             <div>
               <div className="flex items-center justify-between mb-4">
                 <div className="w-11 h-11 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-600 dark:text-blue-400 font-black text-lg">
@@ -582,7 +573,7 @@ const Hero = () => {
           </div>
 
           {/* Card 3: 100% Upfront Verified Guarantee */}
-          <div className="p-6 rounded-3xl bg-white dark:bg-zinc-900/80 border border-slate-200/90 dark:border-zinc-800 shadow-[0_10px_35px_-8px_rgba(0,0,0,0.06)] dark:shadow-none hover:shadow-[0_20px_45px_-12px_rgba(37,99,235,0.12)] dark:hover:shadow-[0_20px_45px_-12px_rgba(0,0,0,0.7)] transition-all hover:-translate-y-1.5 flex flex-col justify-between text-left">
+          <div className="relative overflow-hidden p-6 rounded-3xl bg-white dark:bg-zinc-900/80 border border-slate-200/90 dark:border-zinc-800 shadow-[0_12px_35px_-8px_rgba(15,23,42,0.07)] dark:shadow-none hover:shadow-[0_22px_50px_-12px_rgba(37,99,235,0.15)] dark:hover:shadow-[0_20px_45px_-12px_rgba(0,0,0,0.7)] transition-all duration-300 hover:-translate-y-1.5 flex flex-col justify-between text-left before:absolute before:top-0 before:left-0 before:right-0 before:h-1 before:bg-gradient-to-r before:from-violet-500 before:to-pink-500">
             <div>
               <div className="flex items-center justify-between mb-4">
                 <div className="w-11 h-11 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-600 dark:text-violet-400 font-black text-lg">
