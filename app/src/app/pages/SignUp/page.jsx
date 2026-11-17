@@ -7,10 +7,11 @@ import { authClient } from "@/lib/auth-client";
 
 const SignUpPage = () => {
   const router = useRouter();
-  const [role, setRole] = useState("seeker"); // "seeker" | "employer"
+  const [role, setRole] = useState("seeker"); // "seeker" | "employer" | "admin"
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [companyName, setCompanyName] = useState("");
+  const [adminCode, setAdminCode] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
@@ -54,6 +55,7 @@ const SignUpPage = () => {
         name: fullName,
         email: email,
         password: password,
+        role: role,
         callbackURL: "/",
       });
 
@@ -194,13 +196,13 @@ const SignUpPage = () => {
             </div>
           )}
 
-          {/* Account Role Selector (Job Seeker vs Employer) */}
-          <div className="grid grid-cols-2 gap-3 mb-6">
+          {/* Account Role Selector (Job Seeker vs Employer vs Admin) */}
+          <div className="grid grid-cols-3 gap-2 sm:gap-3 mb-6">
             {/* Candidate Role Card */}
             <button
               type="button"
               onClick={() => setRole("seeker")}
-              className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+              className={`p-3 sm:p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
                 role === "seeker"
                   ? "bg-blue-50/70 border-blue-500 text-blue-900 dark:bg-blue-950/40 dark:border-blue-400 dark:text-blue-100 shadow-sm shadow-blue-500/10 ring-2 ring-blue-500/20"
                   : "bg-slate-50/80 dark:bg-zinc-800/60 border-slate-200 dark:border-zinc-700/80 text-slate-600 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800"
@@ -208,13 +210,13 @@ const SignUpPage = () => {
             >
               <div className="flex items-center justify-between mb-2">
                 <div
-                  className={`w-8 h-8 rounded-xl flex items-center justify-center ${
+                  className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center ${
                     role === "seeker"
                       ? "bg-blue-600 text-white"
                       : "bg-slate-200 dark:bg-zinc-700 text-slate-600 dark:text-zinc-300"
                   }`}
                 >
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <circle cx="12" cy="7" r="4" />
                     <path d="M5 21v-2a7 7 0 0 1 14 0v2" />
                   </svg>
@@ -226,8 +228,8 @@ const SignUpPage = () => {
                 )}
               </div>
               <div>
-                <div className="font-bold text-sm">Job Seeker</div>
-                <div className="text-[11px] opacity-80">I want to find a job</div>
+                <div className="font-bold text-xs sm:text-sm">Job Seeker</div>
+                <div className="text-[10px] sm:text-[11px] opacity-80 leading-tight">Find a job</div>
               </div>
             </button>
 
@@ -235,7 +237,7 @@ const SignUpPage = () => {
             <button
               type="button"
               onClick={() => setRole("employer")}
-              className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+              className={`p-3 sm:p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
                 role === "employer"
                   ? "bg-indigo-50/70 border-indigo-500 text-indigo-900 dark:bg-indigo-950/40 dark:border-indigo-400 dark:text-indigo-100 shadow-sm shadow-indigo-500/10 ring-2 ring-indigo-500/20"
                   : "bg-slate-50/80 dark:bg-zinc-800/60 border-slate-200 dark:border-zinc-700/80 text-slate-600 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800"
@@ -243,13 +245,13 @@ const SignUpPage = () => {
             >
               <div className="flex items-center justify-between mb-2">
                 <div
-                  className={`w-8 h-8 rounded-xl flex items-center justify-center ${
+                  className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center ${
                     role === "employer"
                       ? "bg-indigo-600 text-white"
                       : "bg-slate-200 dark:bg-zinc-700 text-slate-600 dark:text-zinc-300"
                   }`}
                 >
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <rect x="2" y="7" width="20" height="14" rx="2" />
                     <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
                   </svg>
@@ -261,8 +263,42 @@ const SignUpPage = () => {
                 )}
               </div>
               <div>
-                <div className="font-bold text-sm">Employer</div>
-                <div className="text-[11px] opacity-80">I want to hire talent</div>
+                <div className="font-bold text-xs sm:text-sm">Employer</div>
+                <div className="text-[10px] sm:text-[11px] opacity-80 leading-tight">Hire talent</div>
+              </div>
+            </button>
+
+            {/* Admin Role Card */}
+            <button
+              type="button"
+              onClick={() => setRole("admin")}
+              className={`p-3 sm:p-3.5 rounded-2xl border text-left transition-all cursor-pointer flex flex-col justify-between ${
+                role === "admin"
+                  ? "bg-violet-50/70 border-violet-500 text-violet-900 dark:bg-violet-950/40 dark:border-violet-400 dark:text-violet-100 shadow-sm shadow-violet-500/10 ring-2 ring-violet-500/20"
+                  : "bg-slate-50/80 dark:bg-zinc-800/60 border-slate-200 dark:border-zinc-700/80 text-slate-600 dark:text-zinc-400 hover:bg-slate-100 dark:hover:bg-zinc-800"
+              }`}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <div
+                  className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center ${
+                    role === "admin"
+                      ? "bg-violet-600 text-white"
+                      : "bg-slate-200 dark:bg-zinc-700 text-slate-600 dark:text-zinc-300"
+                  }`}
+                >
+                  <svg className="w-3.5 h-3.5 sm:w-4 sm:h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                  </svg>
+                </div>
+                {role === "admin" && (
+                  <span className="w-4 h-4 rounded-full bg-violet-600 text-white flex items-center justify-center text-[10px] font-bold">
+                    ✓
+                  </span>
+                )}
+              </div>
+              <div>
+                <div className="font-bold text-xs sm:text-sm">Admin</div>
+                <div className="text-[10px] sm:text-[11px] opacity-80 leading-tight">Manage portal</div>
               </div>
             </button>
           </div>
@@ -390,6 +426,33 @@ const SignUpPage = () => {
               </div>
             )}
 
+            {/* Role-specific field (Admin security key) */}
+            {role === "admin" && (
+              <div>
+                <label
+                  htmlFor="adminCode"
+                  className="block text-xs font-bold text-slate-700 dark:text-zinc-300 uppercase tracking-wider mb-1.5 text-left"
+                >
+                  Admin Passkey <span className="text-[10px] font-normal text-slate-400 dark:text-zinc-500">(Optional for preview)</span>
+                </label>
+                <div className="relative flex items-center">
+                  <div className="absolute left-3.5 text-slate-400 dark:text-zinc-500 pointer-events-none">
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                    </svg>
+                  </div>
+                  <input
+                    id="adminCode"
+                    type="password"
+                    value={adminCode}
+                    onChange={(e) => setAdminCode(e.target.value)}
+                    placeholder="Enter platform admin security passkey"
+                    className="w-full pl-10 pr-4 py-3 rounded-xl bg-slate-50 dark:bg-zinc-800/80 border border-slate-200 dark:border-zinc-700/80 text-sm font-medium text-slate-900 dark:text-white placeholder-slate-400 outline-none focus:bg-white dark:focus:bg-zinc-800 focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 transition-all"
+                  />
+                </div>
+              </div>
+            )}
+
             {/* Password Field */}
             <div>
               <label
@@ -493,7 +556,11 @@ const SignUpPage = () => {
                 ) : (
                   <>
                     <span>
-                      {role === "employer" ? "Create Employer Account" : "Create Candidate Account"}
+                      {role === "employer"
+                        ? "Create Employer Account"
+                        : role === "admin"
+                        ? "Create Admin Account"
+                        : "Create Candidate Account"}
                     </span>
                     <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                       <path d="M5 12h14" />
