@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/auth-client";
-
+import { createJob } from "@/lib/actions/jobs";
 export default function CreateJobPage() {
   const router = useRouter();
   const { data: session, isPending: sessionLoading } = useSession();
@@ -181,24 +181,10 @@ export default function CreateJobPage() {
     // 3. Send to backend server
     try {
       setIsSubmitting(true);
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/jobs`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(jobData),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Server returned error (${response.status})`);
-      }
-
-      const result = await response.json();
+      const result = await createJob(jobData);
       console.log("Job created successfully:", result);
       showToast("Job opening successfully published!");
 
-      // Optional redirect to employer manage-jobs
       setTimeout(() => {
         router.push("/dashboard/employer/manage-jobs");
       }, 1500);
