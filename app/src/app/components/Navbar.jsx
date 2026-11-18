@@ -537,7 +537,7 @@ const Navbar = () => {
               <>
                 {/* Log in Button */}
                 <Link
-                  href="/pages/Login"
+                  href="/Login"
                   className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                     isDark
                       ? "text-zinc-200 hover:text-white hover:bg-zinc-800/80 border border-transparent hover:border-zinc-700"
@@ -549,7 +549,7 @@ const Navbar = () => {
 
                 {/* Get Started Button */}
                 <Link
-                  href="/pages/SignUp"
+                  href="/SignUp"
                   className="group relative inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-white transition-all duration-300 bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:via-indigo-500 hover:to-violet-500 shadow-md shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] overflow-hidden"
                 >
                   {/* Subtle shining light beam on hover */}
@@ -842,7 +842,7 @@ const Navbar = () => {
             ) : isMounted && !isPending ? (
               <>
                 <Link
-                  href="/pages/Login"
+                  href="/Login"
                   onClick={() => setMobileMenuOpen(false)}
                   className={`w-full py-3 text-center rounded-xl text-sm font-semibold border transition-colors ${
                     isDark
@@ -854,7 +854,7 @@ const Navbar = () => {
                 </Link>
 
                 <Link
-                  href="/pages/SignUp"
+                  href="/SignUp"
                   onClick={() => setMobileMenuOpen(false)}
                   className="w-full py-3 text-center rounded-xl text-sm font-bold text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 shadow-lg shadow-blue-500/25 active:scale-[0.99] transition-transform"
                 >
