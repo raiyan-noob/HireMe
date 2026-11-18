@@ -38,6 +38,10 @@ export const auth = betterAuth({
         required: false,
         defaultValue: "seeker",
       },
+      companyName: {
+        type: "string",
+        required: false,
+      },
     },
   },
   emailAndPassword: {

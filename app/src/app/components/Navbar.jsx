@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useSyncExternalStore } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useSession, signOut } from "@/lib/auth-client";
 
 // Hydration-safe mounted detector without setState in effect
@@ -41,6 +41,7 @@ const getServerSnapshot = () => false;
 
 const Navbar = () => {
   const router = useRouter();
+  const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
@@ -146,12 +147,30 @@ const Navbar = () => {
 
   const roleBadge = getRoleBadge(session?.user?.role);
 
+  const getDashboardRoute = (role) => {
+    switch (role?.toLowerCase()) {
+      case "admin":
+        return "/dashboard/admin";
+      case "employer":
+        return "/dashboard/employer";
+      default:
+        return "/dashboard/seeker";
+    }
+  };
+
+  const dashboardRoute = getDashboardRoute(session?.user?.role);
+
   // Nav links data
   const navLinks = [
     { name: "Browse Jobs", href: "/jobs", badge: "New" },
     { name: "Company", href: "/company" },
     { name: "Pricing", href: "/pricing" },
   ];
+
+  // Hide global Navbar on all dashboard pages (the dashboard has its own dedicated sidebar)
+  if (pathname?.startsWith("/dashboard")) {
+    return null;
+  }
 
   return (
     <header
@@ -452,21 +471,25 @@ const Navbar = () => {
                     {/* Quick Profile Nav Items */}
                     <div className="space-y-0.5 py-1">
                       <Link
-                        href="/jobs"
+                        href={dashboardRoute}
                         onClick={() => setProfileDropdownOpen(false)}
-                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold hover:bg-slate-100 dark:hover:bg-zinc-800 transition-colors"
+                        className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold hover:bg-blue-50 dark:hover:bg-blue-950/40 text-slate-700 hover:text-blue-600 dark:text-zinc-200 dark:hover:text-blue-400 transition-colors"
                       >
                         <svg
-                          className="w-4 h-4 text-slate-400 dark:text-zinc-500"
+                          className="w-4 h-4 text-blue-500"
                           viewBox="0 0 24 24"
                           fill="none"
                           stroke="currentColor"
                           strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                         >
-                          <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
-                          <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+                          <rect width="7" height="9" x="3" y="3" rx="1" />
+                          <rect width="7" height="5" x="14" y="3" rx="1" />
+                          <rect width="7" height="9" x="14" y="12" rx="1" />
+                          <rect width="7" height="5" x="3" y="16" rx="1" />
                         </svg>
-                        <span>Applied Jobs</span>
+                        <span>Dashboard</span>
                       </Link>
 
                       {session.user.role === "admin" && (
@@ -697,6 +720,36 @@ const Navbar = () => {
                 {roleBadge.label}
               </span>
             </div>
+          )}
+
+          {/* Mobile User Dashboard Link (When Logged In) */}
+          {isMounted && session?.user && (
+            <Link
+              href={dashboardRoute}
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center justify-between px-4 py-3 rounded-xl text-sm font-bold bg-blue-50/70 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200/60 dark:border-blue-900/40 hover:bg-blue-100/70 dark:hover:bg-blue-900/50 transition-colors"
+            >
+              <div className="flex items-center gap-2.5">
+                <svg
+                  className="w-4 h-4 text-blue-500"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <rect width="7" height="9" x="3" y="3" rx="1" />
+                  <rect width="7" height="5" x="14" y="3" rx="1" />
+                  <rect width="7" height="9" x="14" y="12" rx="1" />
+                  <rect width="7" height="5" x="3" y="16" rx="1" />
+                </svg>
+                <span>Dashboard</span>
+              </div>
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="m9 18 6-6-6-6" />
+              </svg>
+            </Link>
           )}
 
           {/* Navigation Links */}

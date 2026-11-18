@@ -57,6 +57,7 @@ const SignUpPage = () => {
         email: email,
         password: password,
         role: role,
+        companyName: role === "employer" ? companyName : undefined,
         callbackURL: "/",
       });
 
