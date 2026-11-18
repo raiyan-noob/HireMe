@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import 'dotenv/config';
 import { MongoClient } from 'mongodb';
+import userRoutes from './routes/userRoutes.js';
 
 // Fix querySrv ECONNREFUSED on local ISP DNS
 try {
@@ -31,10 +32,15 @@ export async function connectToMongoDB() {
 }
 
 const connectedClient = await connectToMongoDB();
+const db= connectedClient.db('HireMedb');
+const users = db.collection('user');
 
 app.get('/', (req, res) => {
   res.send('Server is running');
 });
+
+// User routes
+app.use('/users', userRoutes(users));
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
