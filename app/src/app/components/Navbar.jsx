@@ -256,26 +256,44 @@ const Navbar = () => {
 
           {/* Center Navigation Links (Desktop) */}
           <nav className="hidden md:flex items-center gap-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                className={`relative px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-2 group ${
-                  isDark
-                    ? "text-zinc-300 hover:text-white hover:bg-zinc-800/60"
-                    : "text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/80"
-                }`}
-              >
-                <span>{link.name}</span>
-                {link.badge && (
-                  <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xs">
-                    {link.badge}
+            {navLinks.map((link) => {
+              const isActive =
+                pathname === link.href ||
+                (link.href !== "/" && pathname?.startsWith(link.href));
+
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  className={`relative px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200 flex items-center gap-2 group ${
+                    isActive
+                      ? isDark
+                        ? "text-blue-400 bg-blue-950/40 border border-blue-800/60 shadow-xs"
+                        : "text-blue-600 bg-blue-50/90 border border-blue-200/80 shadow-xs"
+                      : isDark
+                      ? "text-zinc-300 hover:text-white hover:bg-zinc-800/60 border border-transparent"
+                      : "text-zinc-600 hover:text-zinc-950 hover:bg-zinc-100/80 border border-transparent"
+                  }`}
+                >
+                  <span className={isActive ? "text-blue-600 dark:text-blue-400 font-bold" : ""}>
+                    {link.name}
                   </span>
-                )}
-                {/* Subtle Hover underline bar */}
-                <span className="absolute bottom-0.5 left-4 right-4 h-0.5 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full opacity-0 scale-x-0 group-hover:opacity-100 group-hover:scale-x-100 transition-all duration-300 origin-center" />
-              </Link>
-            ))}
+                  {link.badge && (
+                    <span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-xs">
+                      {link.badge}
+                    </span>
+                  )}
+                  {/* Subtle Hover or Active underline bar */}
+                  <span
+                    className={`absolute bottom-0.5 left-4 right-4 h-0.5 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-full transition-all duration-300 origin-center ${
+                      isActive
+                        ? "opacity-100 scale-x-100"
+                        : "opacity-0 scale-x-0 group-hover:opacity-100 group-hover:scale-x-100"
+                    }`}
+                  />
+                </Link>
+              );
+            })}
           </nav>
 
           {/* Right Action Elements */}
@@ -754,37 +772,53 @@ const Navbar = () => {
 
           {/* Navigation Links */}
           <div className="space-y-1">
-            {navLinks.map((link) => (
-              <Link
-                key={link.name}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`flex items-center justify-between px-4 py-3 rounded-xl text-base font-semibold transition-colors ${
-                  isDark
-                    ? "text-zinc-200 hover:bg-zinc-900 hover:text-white"
-                    : "text-zinc-800 hover:bg-zinc-100 hover:text-zinc-950"
-                }`}
-              >
-                <span>{link.name}</span>
-                {link.badge ? (
-                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
-                    {link.badge}
-                  </span>
-                ) : (
-                  <svg
-                    className={`w-4 h-4 ${isDark ? "text-zinc-500" : "text-zinc-400"}`}
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="m9 18 6-6-6-6" />
-                  </svg>
-                )}
-              </Link>
-            ))}
+            {navLinks.map((link) => {
+              const isActive =
+                pathname === link.href ||
+                (link.href !== "/" && pathname?.startsWith(link.href));
+
+              return (
+                <Link
+                  key={link.name}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`flex items-center justify-between px-4 py-3 rounded-xl text-base font-semibold transition-colors ${
+                    isActive
+                      ? isDark
+                        ? "bg-blue-950/40 text-blue-400 border border-blue-800/60 font-bold"
+                        : "bg-blue-50 text-blue-600 border border-blue-200/80 font-bold"
+                      : isDark
+                      ? "text-zinc-200 hover:bg-zinc-900 hover:text-white"
+                      : "text-zinc-800 hover:bg-zinc-100 hover:text-zinc-950"
+                  }`}
+                >
+                  <span>{link.name}</span>
+                  {link.badge ? (
+                    <span className="px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-gradient-to-r from-blue-600 to-indigo-600 text-white">
+                      {link.badge}
+                    </span>
+                  ) : (
+                    <svg
+                      className={`w-4 h-4 ${
+                        isActive
+                          ? "text-blue-500"
+                          : isDark
+                          ? "text-zinc-500"
+                          : "text-zinc-400"
+                      }`}
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="m9 18 6-6-6-6" />
+                    </svg>
+                  )}
+                </Link>
+              );
+            })}
           </div>
 
           {/* Divider */}

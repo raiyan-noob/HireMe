@@ -64,3 +64,19 @@ export const updateJob = async (jobId, jobData) => {
 
   return await response.json();
 };
+
+export const getJobs = async (query = "") => {
+  const url = new URL(`${Base_URL}/jobs`);
+  if (query) {
+    url.search = query;
+  }
+  const response = await fetch(url, {
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Server returned error (${response.status})`);
+  }
+
+  return await response.json();
+};

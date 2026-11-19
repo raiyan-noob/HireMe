@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 // Categorized filter chips spanning diverse industries
 const categoryChips = [
   { label: "⚡ Remote & Flexible", query: "Remote" },
@@ -221,6 +222,7 @@ const companyLogos = [
 ];
 
 const Hero = () => {
+  const router = useRouter();
   const [searchTitle, setSearchTitle] = useState("");
   const [searchLocation, setSearchLocation] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
@@ -229,6 +231,19 @@ const Hero = () => {
   const [appliedJob, setAppliedJob] = useState(false);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (searchTitle.trim()) {
+      params.set("search", searchTitle.trim());
+    }
+    if (selectedCategory && selectedCategory !== "all") {
+      params.set("workplace", selectedCategory);
+    }
+    const qs = params.toString();
+    router.push(qs ? `/jobs?${qs}` : "/jobs");
+  };
 
   // Smooth mouse-following glow for interactive feel in dark mode
   const handleMouseMove = (e) => {
@@ -240,11 +255,12 @@ const Hero = () => {
   };
 
   const handleCategoryClick = (cat) => {
-    if (activeCategory === cat.name) {
+    const chipKey = cat.label || cat.name;
+    if (activeCategory === chipKey) {
       setActiveCategory(null);
       setSearchTitle("");
     } else {
-      setActiveCategory(cat.name);
+      setActiveCategory(chipKey);
       setSearchTitle(cat.query);
     }
   };
@@ -338,7 +354,10 @@ const Hero = () => {
 
         {/* Floating High-Contrast Search Capsule */}
         <div className="mt-10 max-w-3xl mx-auto">
-          <div className="group relative p-2 sm:p-2.5 rounded-2xl sm:rounded-3xl bg-white dark:bg-zinc-900/95 border border-slate-200/90 dark:border-zinc-800 shadow-[0_16px_40px_-12px_rgba(15,23,42,0.08),0_2px_8px_-2px_rgba(15,23,42,0.04)] dark:shadow-2xl dark:shadow-black/70 backdrop-blur-xl transition-all duration-300 focus-within:border-blue-600 dark:focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10 dark:focus-within:ring-blue-500/20">
+          <form
+            onSubmit={handleSearch}
+            className="group relative p-2 sm:p-2.5 rounded-2xl sm:rounded-3xl bg-white dark:bg-zinc-900/95 border border-slate-200/90 dark:border-zinc-800 shadow-[0_16px_40px_-12px_rgba(15,23,42,0.08),0_2px_8px_-2px_rgba(15,23,42,0.04)] dark:shadow-2xl dark:shadow-black/70 backdrop-blur-xl transition-all duration-300 focus-within:border-blue-600 dark:focus-within:border-blue-500 focus-within:ring-4 focus-within:ring-blue-500/10 dark:focus-within:ring-blue-500/20"
+          >
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
               
               {/* Role / Industry / Keyword Input */}
@@ -416,7 +435,7 @@ const Hero = () => {
 
               {/* Search Submit CTA Button */}
               <button
-                type="button"
+                type="submit"
                 className="w-full sm:w-auto px-8 py-3.5 rounded-xl sm:rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:via-indigo-500 hover:to-violet-500 text-white font-bold text-sm sm:text-base shadow-md shadow-blue-500/25 hover:shadow-xl hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0 transition-all flex items-center justify-center gap-2 shrink-0 cursor-pointer"
               >
                 <span>Find Jobs</span>
@@ -434,7 +453,7 @@ const Hero = () => {
                 </svg>
               </button>
             </div>
-          </div>
+          </form>
 
           {/* Interactive Multi-Industry Filter Chips */}
           <div className="mt-5 flex flex-wrap items-center justify-center gap-2 text-xs sm:text-sm">

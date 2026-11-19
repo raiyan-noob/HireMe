@@ -3,11 +3,27 @@ import { ObjectId } from 'mongodb';
 const router = express.Router();
 
 const jobRoutes = (jobs) => {
-    // GET /jobs - Fetch jobs (optionally filter by employer email: ?email=...)
+    // GET /jobs - Fetch jobs (support query filters: email, search, category, workplaceType)
     router.get('/', async (req, res) => {
         try {
-            const { email } = req.query;
-            const query = email ? { employerEmail: email } : {};
+            const { email, search, category, workplaceType, employmentType } = req.query;
+            const query = {};
+            if (email) query.employerEmail = email;
+            if (category && category !== 'All') query.category = category;
+            const wp = workplaceType || req.query.workplace;
+            if (wp && wp !== 'All') {
+                query.workplaceType = { $regex: new RegExp(`^${wp}$`, 'i') };
+            }
+            if (employmentType && employmentType !== 'All') query.employmentType = employmentType;
+            if (search) {
+                query.$or = [
+                    { jobTitle: { $regex: search, $options: 'i' } },
+                    { companyName: { $regex: search, $options: 'i' } },
+                    { skills: { $regex: search, $options: 'i' } },
+                    { location: { $regex: search, $options: 'i' } },
+                    { category: { $regex: search, $options: 'i' } }
+                ];
+            }
             const result = await jobs.find(query).sort({ createdAt: -1 }).toArray();
             res.json(result);
         } catch (error) {
