@@ -80,3 +80,4 @@ export const getJobs = async (query = "") => {
 
   return await response.json();
 };
+

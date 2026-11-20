@@ -3,6 +3,10 @@
 import React, { useState, useMemo, useEffect, useCallback } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import JobCard from "@/app/components/JobCard";
+import { useSession } from "@/lib/auth-client";
+import { applyForJob, getApplications, getApplicationsCount } from "@/lib/actions/applications";
+import { saveJob, getSavedJobs, unsaveJob } from "@/lib/actions/saved";
+import { getUserPlanStatus } from "@/lib/actions/payment";
 
 // Normalizes workplace strings from query params (e.g. "remote", "hybrid", "onsite")
 function normalizeWorkplaceParam(val) {
@@ -18,6 +22,8 @@ function normalizeWorkplaceParam(val) {
 export default function JobsFeed({ initialJobs = [], initialQuery = {} }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { data: session } = useSession();
+  const user = session?.user;
 
   // URL-driven query extraction (Source of truth)
   const urlSearch =
@@ -74,20 +80,98 @@ export default function JobsFeed({ initialJobs = [], initialQuery = {} }) {
 
   // Saved Jobs tracking
   const [savedJobIds, setSavedJobIds] = useState(new Set());
+  // Applied Jobs tracking (to hide applied jobs from the browse jobs feed)
+  const [appliedJobIds, setAppliedJobIds] = useState(new Set());
 
-  const handleToggleSave = (job) => {
-    const id = job._id || job.id || job.jobTitle;
+  // Fetch user's applied and saved jobs when user session loads
+  useEffect(() => {
+    if (!user?.email) return;
+
+    let isMounted = true;
+
+    // Fetch applied jobs to filter them out of the feed
+    getApplications(user.email)
+      .then((apps) => {
+        if (isMounted && Array.isArray(apps)) {
+          const ids = new Set(
+            apps
+              .map((a) => a.jobId || a.job?._id || a.job?.id)
+              .filter(Boolean)
+              .map(String)
+          );
+          setAppliedJobIds(ids);
+        }
+      })
+      .catch(() => {});
+
+    // Fetch saved jobs
+    getSavedJobs(user.email)
+      .then((saved) => {
+        if (isMounted && Array.isArray(saved)) {
+          const ids = new Set(
+            saved
+              .map((s) => s.jobId || s._id)
+              .filter(Boolean)
+              .map(String)
+          );
+          setSavedJobIds(ids);
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      isMounted = false;
+    };
+  }, [user?.email]);
+
+  const handleToggleSave = async (job) => {
+    if (!user) {
+      showToast("Please log in to save jobs.");
+      return;
+    }
+
+    const id = String(job._id || job.id || job.jobTitle);
+    const wasSaved = savedJobIds.has(id);
+
+    // Optimistic UI update
     setSavedJobIds((prev) => {
       const updated = new Set(prev);
-      if (updated.has(id)) {
-        updated.delete(id);
-        showToast(`Removed "${job.jobTitle}" from saved jobs.`);
-      } else {
-        updated.add(id);
-        showToast(`Saved "${job.jobTitle}" to your saved jobs list!`);
-      }
+      if (wasSaved) updated.delete(id);
+      else updated.add(id);
       return updated;
     });
+
+    if (wasSaved) {
+      showToast(`Removed "${job.jobTitle}" from saved jobs.`);
+      try {
+        await unsaveJob(id, user.email);
+      } catch (err) {
+        console.error("Failed to unsave job:", err);
+      }
+    } else {
+      showToast(`Saved "${job.jobTitle}" to your saved jobs list!`);
+      try {
+        await saveJob({
+          jobId: id,
+          userId: user.id || user._id,
+          email: user.email,
+          jobTitle: job.jobTitle,
+          companyName: job.companyName,
+          location: job.location,
+          workplaceType: job.workplaceType,
+          employmentType: job.employmentType,
+          category: job.category,
+          skills: job.skills,
+          minSalary: job.minSalary,
+          maxSalary: job.maxSalary,
+          currency: job.currency,
+          salaryPeriod: job.salaryPeriod,
+          description: job.description,
+        });
+      } catch (err) {
+        console.error("Failed to save job:", err);
+      }
+    }
   };
 
   // Push updates to URL so the browser URL changes and drives the job listings
@@ -263,6 +347,102 @@ export default function JobsFeed({ initialJobs = [], initialQuery = {} }) {
   ).length;
   const featuredCount = initialJobs.filter((j) => j.isFeatured).length;
 
+  const handleApply = async (job) => {
+    const target = job || selectedJob;
+    if (!target) return;
+
+    if (!user) {
+      showToast("Please log in to apply for this position.");
+      const jobId = target?._id || target?.id;
+      const redirectPath = jobId ? `/jobs/${jobId}` : "/jobs";
+      setTimeout(() => {
+        router.push(`/Login?redirect=${encodeURIComponent(redirectPath)}`);
+      }, 1200);
+      return;
+    }
+
+    const role = (user?.role || "seeker").toLowerCase();
+    if (role === "employer") {
+      showToast("Employer accounts cannot apply for positions. Please use a job seeker account.");
+      return;
+    }
+
+    try {
+
+      // Check if user has an active Pro or Premium subscription with unlimited applications
+      const isPaidPlan =
+        user?.plan === "pro" ||
+        user?.plan === "premium" ||
+        user?.pro === true ||
+        user?.premium === true;
+
+      if (!isPaidPlan) {
+        const planStatus = await getUserPlanStatus(user.email).catch(() => null);
+        const hasPaidPlan =
+          planStatus?.plan === "pro" ||
+          planStatus?.plan === "premium" ||
+          planStatus?.pro ||
+          planStatus?.premium;
+
+        if (!hasPaidPlan) {
+          const countResult = await getApplicationsCount(user.email).catch(() => null);
+          const appliedCount =
+            typeof countResult?.count === "number"
+              ? countResult.count
+              : appliedJobIds.size;
+
+          if (appliedCount >= 5) {
+            
+            router.push("/pricing");
+            showToast("You have reached the 5-application limit on the Free plan. Please upgrade to Pro for unlimited applications.");
+            return;
+          }
+        }
+      }
+
+      const userPlan = (user?.plan || (user?.premium ? "premium" : user?.pro ? "pro" : "normal")).toLowerCase();
+
+      const application = {
+        jobId: target._id || target.id,
+        userId: user.id || user._id,
+        email: user.email,
+        plan: userPlan,
+        priorityScore: userPlan === "premium" ? 3 : userPlan === "pro" ? 2 : 1,
+        verifiedBadge: userPlan === "pro" || userPlan === "premium",
+        priorityCandidate: userPlan === "premium",
+        jobTitle: target.jobTitle,
+        companyName: target.companyName,
+        location: target.location || "Remote",
+        workplaceType: target.workplaceType || "Remote",
+        employmentType: target.employmentType || "Full-time",
+        category: target.category || "General",
+        skills: Array.isArray(target.skills) ? target.skills : [],
+        minSalary: target.minSalary || null,
+        maxSalary: target.maxSalary || null,
+        currency: target.currency || "USD",
+        salaryPeriod: target.salaryPeriod || "Per Year",
+        description: target.description || "",
+        responsibilities: Array.isArray(target.responsibilities) ? target.responsibilities : [],
+        experienceLevel: target.experienceLevel || "",
+        applicationDeadline: target.applicationDeadline || "",
+        showSalary: target.showSalary !== undefined ? target.showSalary : true,
+        equityIncluded: !!target.equityIncluded,
+        appliedAt: new Date().toISOString(),
+      };
+
+      const res = await applyForJob(application);
+      if (res && (res.insertedId || res.acknowledged)) {
+        showToast("Application submitted successfully!");
+        setAppliedJobIds((prev) => new Set(prev).add(String(target._id || target.id)));
+        setSelectedJob(null);
+      } else {
+        showToast("Could not submit application. Please try again.");
+      }
+    } catch (error) {
+      console.error("Apply error:", error);
+      showToast(error.message || "Failed to submit application.");
+    }
+  };
   return (
     <div
       onMouseMove={handleMouseMove}
@@ -272,7 +452,7 @@ export default function JobsFeed({ initialJobs = [], initialQuery = {} }) {
     >
       {/* Toast Notification Banner */}
       {toastMessage && (
-        <div className="fixed top-6 right-6 z-50 animate-in fade-in slide-in-from-top-4 duration-300">
+        <div className="fixed top-6 right-6 z-[100] animate-in fade-in slide-in-from-top-4 duration-300 pointer-events-auto">
           <div className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-slate-900/95 dark:bg-zinc-800/95 text-white shadow-2xl border border-slate-700/80 dark:border-zinc-700 backdrop-blur-md">
             <div className="w-6 h-6 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
               <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
@@ -621,6 +801,8 @@ export default function JobsFeed({ initialJobs = [], initialQuery = {} }) {
               <JobCard
                 key={job._id || `${job.jobTitle}-${job.companyName}`}
                 job={job}
+                saved={savedJobIds.has(String(job._id || job.id || job.jobTitle))}
+                isApplied={appliedJobIds.has(String(job._id || job.id))}
                 onSave={handleToggleSave}
                 onViewDetails={(j) => setSelectedJob(j)}
               />
@@ -633,6 +815,8 @@ export default function JobsFeed({ initialJobs = [], initialQuery = {} }) {
               <JobCard
                 key={job._id || `${job.jobTitle}-${job.companyName}`}
                 job={job}
+                saved={savedJobIds.has(String(job._id || job.id || job.jobTitle))}
+                isApplied={appliedJobIds.has(String(job._id || job.id))}
                 onSave={handleToggleSave}
                 onViewDetails={(j) => setSelectedJob(j)}
               />
@@ -810,12 +994,29 @@ export default function JobsFeed({ initialJobs = [], initialQuery = {} }) {
               <button
                 type="button"
                 onClick={() => handleToggleSave(selectedJob)}
-                className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-zinc-300 text-xs sm:text-sm font-bold hover:bg-slate-50 dark:hover:bg-zinc-800 transition-colors cursor-pointer flex items-center gap-1.5"
+                className={`px-4 py-2.5 rounded-xl border text-xs sm:text-sm font-bold transition-colors cursor-pointer flex items-center gap-1.5 ${
+                  selectedJob && savedJobIds.has(String(selectedJob._id || selectedJob.id || selectedJob.jobTitle))
+                    ? "bg-rose-50 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 border-rose-200 dark:border-rose-900/60"
+                    : "border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-zinc-300 hover:bg-slate-50 dark:hover:bg-zinc-800"
+                }`}
               >
-                <svg className="w-4 h-4 text-rose-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <svg
+                  className={`w-4 h-4 text-rose-500 ${
+                    selectedJob && savedJobIds.has(String(selectedJob._id || selectedJob.id || selectedJob.jobTitle))
+                      ? "fill-rose-500"
+                      : "fill-none"
+                  }`}
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
                   <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
                 </svg>
-                <span>Save Job</span>
+                <span>
+                  {selectedJob && savedJobIds.has(String(selectedJob._id || selectedJob.id || selectedJob.jobTitle))
+                    ? "Saved"
+                    : "Save Job"}
+                </span>
               </button>
 
               <div className="flex items-center gap-2">
@@ -827,16 +1028,26 @@ export default function JobsFeed({ initialJobs = [], initialQuery = {} }) {
                   Close
                 </button>
 
-                <button
-                  type="button"
-                  onClick={() => {
-                    showToast(`Application draft initiated for ${selectedJob.jobTitle}!`);
-                    setSelectedJob(null);
-                  }}
-                  className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white font-bold text-xs sm:text-sm shadow-md shadow-blue-500/25 transition-all cursor-pointer"
-                >
-                  Apply for Position
-                </button>
+                {selectedJob && appliedJobIds.has(String(selectedJob._id || selectedJob.id)) ? (
+                  <button
+                    type="button"
+                    disabled
+                    className="px-6 py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 font-bold text-xs sm:text-sm cursor-not-allowed flex items-center gap-1.5 shadow-xs"
+                  >
+                    <svg className="w-4 h-4 text-emerald-600 dark:text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                    <span>Already Applied</span>
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => handleApply(selectedJob)}
+                    className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600 hover:from-blue-500 hover:to-violet-500 text-white font-bold text-xs sm:text-sm shadow-md shadow-blue-500/25 transition-all cursor-pointer"
+                  >
+                    Apply for Position
+                  </button>
+                )}
               </div>
             </div>
 

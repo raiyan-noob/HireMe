@@ -5,11 +5,19 @@ import Link from "next/link";
 
 export default function JobCard({
   job,
+  saved = false,
+  isApplied = false,
   onSave,
   onViewDetails,
 }) {
-  const [isSaved, setIsSaved] = useState(false);
+  const [isSaved, setIsSaved] = useState(saved);
+  const [prevSaved, setPrevSaved] = useState(saved);
   const [saveAnimating, setSaveAnimating] = useState(false);
+
+  if (prevSaved !== saved) {
+    setPrevSaved(saved);
+    setIsSaved(saved);
+  }
 
   if (!job) return null;
 
@@ -114,6 +122,12 @@ export default function JobCard({
 
           {/* Badges Strip */}
           <div className="flex flex-wrap items-center gap-1.5 mb-3">
+            {isApplied && (
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800 shadow-2xs">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Applied</span>
+              </span>
+            )}
             {job.isFeatured && (
               <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
                 ★ Featured

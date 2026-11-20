@@ -418,8 +418,13 @@ const Navbar = () => {
                     >
                       {session.user.name || session.user.email?.split("@")[0]}
                     </span>
-                    <span className="text-[10px] font-medium text-slate-400 dark:text-zinc-500 capitalize">
-                      {session.user.role || "Candidate"}
+                    <span className="text-[10px] font-medium text-slate-400 dark:text-zinc-500 capitalize flex items-center gap-1">
+                      <span>{session.user.role || "Candidate"}</span>
+                      {session.user.plan === "premium" || session.user.premium ? (
+                        <span className="text-[9px] font-black text-amber-500">👑 VIP</span>
+                      ) : session.user.plan === "pro" || session.user.pro ? (
+                        <span className="text-[9px] font-black text-blue-500">★ PRO</span>
+                      ) : null}
                     </span>
                   </div>
 
@@ -483,6 +488,30 @@ const Navbar = () => {
                         >
                           {roleBadge.label}
                         </span>
+                      </div>
+
+                      {/* Membership Plan Badge */}
+                      <div className="pt-1.5 flex items-center justify-between">
+                        <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400">
+                          Plan
+                        </span>
+                        {session.user.plan === "premium" || session.user.premium ? (
+                          <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
+                            👑 Premium VIP
+                          </span>
+                        ) : session.user.plan === "pro" || session.user.pro ? (
+                          <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/80 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                            ★ Pro Member
+                          </span>
+                        ) : (
+                          <Link
+                            href="/pricing"
+                            onClick={() => setProfileDropdownOpen(false)}
+                            className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 hover:bg-blue-50 dark:bg-zinc-800 text-blue-600 dark:text-blue-400 border border-slate-200 dark:border-zinc-700 transition-colors"
+                          >
+                            Free • Upgrade →
+                          </Link>
+                        )}
                       </div>
                     </div>
 

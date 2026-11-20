@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
-
+import { useSearchParams } from "next/navigation";
 
 
 const LoginPage = () => {
@@ -26,7 +26,8 @@ const LoginPage = () => {
       y: e.clientY - rect.top,
     });
   };
-
+  const searchParams = useSearchParams();
+  const redirectTo = searchParams.get("redirect") || "/";
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage("");

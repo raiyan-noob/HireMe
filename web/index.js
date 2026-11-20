@@ -5,6 +5,9 @@ import 'dotenv/config';
 import { MongoClient } from 'mongodb';
 import userRoutes from './routes/userRoutes.js';
 import jobRoutes from './routes/jobRoutes.js';
+import appRoutes from './routes/appRoutes.js';
+import savedRoutes from './routes/savedRoutes.js';
+import PayRoutes from './routes/payRoutes.js';
 
 // Fix querySrv ECONNREFUSED on local ISP DNS
 try {
@@ -39,6 +42,9 @@ const connectedClient = await connectToMongoDB();
 const db= connectedClient.db('HireMedb');
 const users = db.collection('user');
 const jobs = db.collection('jobs');
+const applications = db.collection('applications');
+const savedJobs = db.collection('savedJobs');
+const payments = db.collection('payments');
 app.get('/', (req, res) => {
   res.send('Server is running');
 });
@@ -47,6 +53,12 @@ app.get('/', (req, res) => {
 app.use('/users', userRoutes(users));
 // Job routes
 app.use('/jobs', jobRoutes(jobs));
+// Application routes
+app.use('/applications', appRoutes(applications, users));
+// Saved Jobs routes
+app.use('/saved', savedRoutes(savedJobs));
+
+app.use('/payments', PayRoutes(payments, users, applications));
 
 app.listen(port, () => {
   console.log(`Example app listening on port ${port}`);
